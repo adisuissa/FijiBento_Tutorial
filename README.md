@@ -17,7 +17,6 @@ Example files are provided at the examples directory (TBD).
 
 
 <h2>2D alignment (montage):</h2>
------------------------
 2D alignment (section montaging) takes a single Tile-Spec json file as input
 which describes a single section that is comprised of several tiles that are
 roughly aligned. Each tile should have some overlap with at least another tile.
@@ -28,15 +27,17 @@ How does it work:
 TBD
 
 Process phases:
-1. Computing SIFT features - we start by computing the SIFT features for each tile in the section.
+<ol>
+<li> Computing SIFT features - we start by computing the SIFT features for each tile in the section.
+</li>
 
-2. Matching SIFT features - TBD
+<li> Matching SIFT features - TBD
+</li>
 
-
+</ol>
 
 
 <h2>3D alignment:</h2>
--------------
 3D alignment takes a directory that has multiple per-section Tile-Spec json files as input, and aligns these sections.
 Our tool is based on the alignment algorithm that were introduced in TrakEM2 (http://www.ini.uzh.ch/~acardona/trakem2.html).
 
@@ -51,7 +52,8 @@ The second phase executes starts by matching the SIFT features of two sections, 
 The last phase performs an optimization on the entire stack of images, and produces a json file for each section with the appropriate elastic transformation.
 
 <h3>Process phases:</h3>
-1. Computing SIFT features - we start by computing the SIFT features for the entire section (probably after downsampling the section).
+<ol>
+<li> Computing SIFT features - we start by computing the SIFT features for the entire section (probably after downsampling the section).
 Executed using:
 create_layer_sift_features.py tilespec_file_name [-o output_sifts_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
@@ -60,10 +62,11 @@ Parameters:
 ** -j jar_file_name - the path to the FijiBento jar file name.
 ** -c conf_file_name - the configuration file that includes the parameters to the java application.
 ** -t threads_num - the number of threads to use.
+</li>
 
-
-2. For each two sections that we wish to align together:
-2.1 Matching SIFT features - match the SIFT features of the two sections.
+<li> For each two sections that we wish to align together:
+<ol>
+<li> Matching SIFT features - match the SIFT features of the two sections.
 Executed using:
 match_layers_sift_features.py tilespec_file_name1 sifts_json_file_name1 tilespec_file_name2 sifts_json_file_name2 [-o output_sift_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
@@ -75,9 +78,9 @@ Parameters:
 ** -j jar_file_name - the path to the FijiBento jar file name.
 ** -c conf_file_name - the configuration file that includes the parameters to the java application.
 ** -t threads_num - the number of threads to use.
+</li>
 
-
-2.2 Filter the matching features - to get a model that roughly aligns these sections.
+<li> Filter the matching features - to get a model that roughly aligns these sections.
 Executed using:
 filter_ransac.py sift_matches_json_file_name compared_url [-o output_model_json_file_name] [-j jar_file_name] [-c conf_file_name]
 Where compared_url is the url of the first json file
@@ -87,9 +90,9 @@ Parameters:
 ** -o output_model_json_file_name - the file where the transformation model between the two sections will be saved.
 ** -j jar_file_name - the path to the FijiBento jar file name.
 ** -c conf_file_name - the configuration file that includes the parameters to the java application.
+</li>
 
-
-2.3 Match by Max-PMCC - creates a triangular mesh from both sections, and attempts to match and elastically align each corresponding triangles between the two sections.
+<li> Match by Max-PMCC - creates a triangular mesh from both sections, and attempts to match and elastically align each corresponding triangles between the two sections.
 Executed using:
 match_layers_by_max_pmcc.py tilespec_file_name1 tilespec_file_name2 model_1_to_2_json_file_name -W section_width -H section_height [-o output_pmcc_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers] [--auto_add_model]
 Parameters:
@@ -104,8 +107,11 @@ Parameters:
 ** -t threads_num - the number of threads to use.
 ** -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
 ** --auto_add_model - allows using the default identity model when no model is found in the previous steps between the two sections.
+</li>
+</ol>
+</li>
 
-3. Optimization - Optimizes the entire stack of sections into a single aligned 3D image.
+<li> Optimization - Optimizes the entire stack of sections into a single aligned 3D image.
 Executed using:
 optimize_layers_elastic.py (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) -W section_width -H section_height [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers]
 Where the output is a list of Section_[layer_num].json files.
@@ -119,7 +125,8 @@ Parameters:
 ** -c conf_file_name - the configuration file that includes the parameters to the java application.
 ** -t threads_num - the number of threads to use.
 ** -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
-
+</li>
+</ol>
 
 * Running all phases on a single machine:
 3d_align_driver.py input_json_files_dir [-w work_dir] [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-d max_layer_distance] [--auto_add_model]
