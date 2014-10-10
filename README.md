@@ -52,8 +52,8 @@ The distance between the adjacent sections has an impact on the elastic alignmen
 The last phase performs an optimization on the entire stack of images, and produces a json file for each section with the appropriate elastic transformation.
 
 <h3>Process phases:</h3>
-<ol>
-<li> Computing SIFT features - we start by computing the SIFT features for the entire section (probably after downsampling the section).
+
+1. Computing SIFT features - we start by computing the SIFT features for the entire section (probably after downsampling the section).
 Executed using:
 create_layer_sift_features.py tilespec_file_name [-o output_sifts_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
@@ -62,7 +62,7 @@ Parameters:
 * -j jar_file_name - the path to the FijiBento jar file name.
 * -c conf_file_name - the configuration file that includes the parameters to the java application.
 * -t threads_num - the number of threads to use.
-</li>
+
 
 <li> For each two sections that we wish to align together:
 <ol>
