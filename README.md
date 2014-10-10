@@ -64,96 +64,89 @@ Parameters:
     * -t threads_num - the number of threads to use.
 
 
-<li> For each two sections that we wish to align together:
-<ol>
-<li> Matching SIFT features - match the SIFT features of the two sections.
+2. For each two sections that we wish to align together:
+
+        1. Matching SIFT features - match the SIFT features of the two sections.
 Executed using:
 match_layers_sift_features.py tilespec_file_name1 sifts_json_file_name1 tilespec_file_name2 sifts_json_file_name2 [-o output_sift_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
-** tilespec_file_name1 - a tile spec json file for the first section.
-** sifts_json_file_name1 - a sift features json file for the first section.
-** tilespec_file_name2 - a tile spec json file for the second section.
-** sifts_json_file_name2 - a sift features json file for the second section.
-** -o output_sift_matches_json_file_name - the file where the matches of the SIFT features will be saved.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -t threads_num - the number of threads to use.
-</li>
+            * tilespec_file_name1 - a tile spec json file for the first section.
+            * sifts_json_file_name1 - a sift features json file for the first section.
+            * tilespec_file_name2 - a tile spec json file for the second section.
+            * sifts_json_file_name2 - a sift features json file for the second section.
+            * -o output_sift_matches_json_file_name - the file where the matches of the SIFT features will be saved.
+            * -j jar_file_name - the path to the FijiBento jar file name.
+            * -c conf_file_name - the configuration file that includes the parameters to the java application.
+            * -t threads_num - the number of threads to use.
 
-<li> Filter the matching features - to get a model that roughly aligns these sections.
+        2. Filter the matching features - to get a model that roughly aligns these sections.
 Executed using:
 filter_ransac.py sift_matches_json_file_name compared_url [-o output_model_json_file_name] [-j jar_file_name] [-c conf_file_name]
 Where compared_url is the url of the first json file
 Parameters:
-** sift_matches_json_file_name - a correspondence json file for the matchings between the first section and the second.
-** compared_url - the url of the tile spec to compare against (typically the url of the second tile-spec from the previous step).
-** -o output_model_json_file_name - the file where the transformation model between the two sections will be saved.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-</li>
+            * sift_matches_json_file_name - a correspondence json file for the matchings between the first section and the second.
+            * compared_url - the url of the tile spec to compare against (typically the url of the second tile-spec from the previous step).
+            * -o output_model_json_file_name - the file where the transformation model between the two sections will be saved.
+            * -j jar_file_name - the path to the FijiBento jar file name.
+            * -c conf_file_name - the configuration file that includes the parameters to the java application.
 
-<li> Match by Max-PMCC - creates a triangular mesh from both sections, and attempts to match and elastically align each corresponding triangles between the two sections.
+        3. Match by Max-PMCC - creates a triangular mesh from both sections, and attempts to match and elastically align each corresponding triangles between the two sections.
 Executed using:
 match_layers_by_max_pmcc.py tilespec_file_name1 tilespec_file_name2 model_1_to_2_json_file_name -W section_width -H section_height [-o output_pmcc_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers] [--auto_add_model]
 Parameters:
-** tilespec_file_name1 - a tile spec json file for the first section.
-** tilespec_file_name2 - a tile spec json file for the second section.
-** model_1_to_2_json_file_name - a model json file that contains the model between the two sections (in case the model is empty, one can use --auto_add_model to set the default identity model in this case).
-** -W section_width - the width (number of pixels) of a section.
-** -H section_height - the height (number of pixels) of a section.
-** -o output_pmcc_matches_json_file_name - the file where the matches of the block matching algorithm will be saved.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -t threads_num - the number of threads to use.
-** -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
-** --auto_add_model - allows using the default identity model when no model is found in the previous steps between the two sections.
-</li>
-</ol>
-</li>
+            * tilespec_file_name1 - a tile spec json file for the first section.
+            * tilespec_file_name2 - a tile spec json file for the second section.
+            * model_1_to_2_json_file_name - a model json file that contains the model between the two sections (in case the model is empty, one can use --auto_add_model to set the default identity model in this case).
+            * -W section_width - the width (number of pixels) of a section.
+            * -H section_height - the height (number of pixels) of a section.
+            * -o output_pmcc_matches_json_file_name - the file where the matches of the block matching algorithm will be saved.
+            * -j jar_file_name - the path to the FijiBento jar file name.
+            * -c conf_file_name - the configuration file that includes the parameters to the java application.
+            * -t threads_num - the number of threads to use.
+            * -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
+            * --auto_add_model - allows using the default identity model when no model is found in the previous steps between the two sections.
 
-<li> Optimization - Optimizes the entire stack of sections into a single aligned 3D image.
+3. Optimization - Optimizes the entire stack of sections into a single aligned 3D image.
 Executed using:
 optimize_layers_elastic.py (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) -W section_width -H section_height [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers]
 Where the output is a list of Section_[layer_num].json files.
 Parameters:
-** (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) - receives either a single file that contains a line-delimeted list of tile-spec json files to parse, or an explicit list of tile spec json files.
-** (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) - receives either a single file that contains a line-delimeted list of correspondence json files to parse, or an explicit list of correspondence json files.
-** -W section_width - the width (number of pixels) of a section.
-** -H section_height - the height (number of pixels) of a section.
-** -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -t threads_num - the number of threads to use.
-** -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
-</li>
-</ol>
+        * (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) - receives either a single file that contains a line-delimeted list of tile-spec json files to parse, or an explicit list of tile spec json files.
+        * (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) - receives either a single file that contains a line-delimeted list of correspondence json files to parse, or an explicit list of correspondence json files.
+        * -W section_width - the width (number of pixels) of a section.
+        * -H section_height - the height (number of pixels) of a section.
+        * -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
+        * -j jar_file_name - the path to the FijiBento jar file name.
+        * -c conf_file_name - the configuration file that includes the parameters to the java application.
+        * -t threads_num - the number of threads to use.
+        * -f fixed_layers - a list of section numbers that are considered to be fixed (will stay as they are), e.g., "1 2 5" indicates that sections 1, 2, and 5 are fixed.
 
 * Running all phases on a single machine:
 3d_align_driver.py input_json_files_dir [-w work_dir] [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-d max_layer_distance] [--auto_add_model]
 Parameters:
-** input_json_files_dir - a directory where a tile-spec json file per section are found.
-** -w work_dir - the directory where the various phases json files will be saved.
-** -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -d max_layer_distance - the maximal distance between two neighboring sections that need to be matched.
-** --auto_add_model - allows using the default identity model when no model is found between two matched sections.
+        * input_json_files_dir - a directory where a tile-spec json file per section are found.
+        * -w work_dir - the directory where the various phases json files will be saved.
+        * -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
+        * -j jar_file_name - the path to the FijiBento jar file name.
+        * -c conf_file_name - the configuration file that includes the parameters to the java application.
+        * -d max_layer_distance - the maximal distance between two neighboring sections that need to be matched.
+        * --auto_add_model - allows using the default identity model when no model is found between two matched sections.
 
 
 
 * Running all phases on the Odyssey cluster:
 3d_align_cluster_driver.py input_json_files_dir [-w work_dir] [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-d max_layer_distance] [--auto_add_model]
 Parameters:
-** input_json_files_dir - a directory where a tile-spec json file per section are found.
-** -w work_dir - the directory where the various phases json files will be saved.
-** -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -d max_layer_distance - the maximal distance between two neighboring sections that need to be matched.
-** --auto_add_model - allows using the default identity model when no model is found between two matched sections.
-** -k - Keeps running all the jobs on the cluster, and if one fails or crashes, it is re-executed.
-** -m - Aggregates multiple small jobs to a single large job, and executes the large jobs on the cluster.
-** -mk - Aggregates multiple small jobs to a single large job, and executes the large jobs on the cluster, while keeping sure that all the jobs are re-executed in case a job fails or crashes.
+        * input_json_files_dir - a directory where a tile-spec json file per section are found.
+        * -w work_dir - the directory where the various phases json files will be saved.
+        * -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
+        * -j jar_file_name - the path to the FijiBento jar file name.
+        * -c conf_file_name - the configuration file that includes the parameters to the java application.
+        * -d max_layer_distance - the maximal distance between two neighboring sections that need to be matched.
+        * --auto_add_model - allows using the default identity model when no model is found between two matched sections.
+        * -k - Keeps running all the jobs on the cluster, and if one fails or crashes, it is re-executed.
+        * -m - Aggregates multiple small jobs to a single large job, and executes the large jobs on the cluster.
+        * -mk - Aggregates multiple small jobs to a single large job, and executes the large jobs on the cluster, while keeping sure that all the jobs are re-executed in case a job fails or crashes.
 
 
 <h2>Parameter conversion from TrakEM2 to this tool</h2>
