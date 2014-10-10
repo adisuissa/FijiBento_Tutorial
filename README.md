@@ -44,11 +44,11 @@ Our tool is based on the alignment algorithm that were introduced in TrakEM2 (ht
 </h3>How does it work:</h3>
 The goal of the 3D alignment process is to take a series of sections (given in a json format), aligning them, and saving the output as json files.
 The tool works in 3 phases: features computation, matching adjacent sections, and optimizing the entire stack.
-The first phase computes SIFT features individaully for each section. In the second phase every two adjacent sections are matched.
+<br>The first phase computes SIFT features individaully for each section. In the second phase every two adjacent sections are matched.
 Not only direct neighboring sections can be matched, but also sections that are "far" from each other.
 This can be especially helpful in cases where there are a few errors in the scanned images, but we still look for a good alignment.
 The distance between the adjacent sections has an impact on the elastic alignment of these sections, therefore the weight of a match decreases as the distance grows.
-The second phase executes starts by matching the SIFT features of two sections, and filtering these matches (using RANSAC http://en.wikipedia.org/wiki/RANSAC) to create some initial model that describes the transformation between the sections. It then creates a mesh of the sections, and executes a Block-Matching algorithm between the two sections.
+<br>The second phase executes starts by matching the SIFT features of two sections, and filtering these matches (using RANSAC http://en.wikipedia.org/wiki/RANSAC) to create some initial model that describes the transformation between the sections. It then creates a mesh of the sections, and executes a Block-Matching algorithm between the two sections.
 The last phase performs an optimization on the entire stack of images, and produces a json file for each section with the appropriate elastic transformation.
 
 <h3>Process phases:</h3>
@@ -57,11 +57,11 @@ The last phase performs an optimization on the entire stack of images, and produ
 Executed using:
 create_layer_sift_features.py tilespec_file_name [-o output_sifts_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
-** tilespec_file_name - a tile spec json file to compute the SIFT features for.
-** -o output_sifts_json_file_name - the file where the SIFT features will be saved.
-** -j jar_file_name - the path to the FijiBento jar file name.
-** -c conf_file_name - the configuration file that includes the parameters to the java application.
-** -t threads_num - the number of threads to use.
+* tilespec_file_name - a tile spec json file to compute the SIFT features for.
+* -o output_sifts_json_file_name - the file where the SIFT features will be saved.
+* -j jar_file_name - the path to the FijiBento jar file name.
+* -c conf_file_name - the configuration file that includes the parameters to the java application.
+* -t threads_num - the number of threads to use.
 </li>
 
 <li> For each two sections that we wish to align together:
