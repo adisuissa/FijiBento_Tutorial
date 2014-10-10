@@ -27,14 +27,10 @@ How does it work:
 TBD
 
 Process phases:
-<ol>
-<li> Computing SIFT features - we start by computing the SIFT features for each tile in the section.
-</li>
 
-<li> Matching SIFT features - TBD
-</li>
+1. Computing SIFT features - we start by computing the SIFT features for each tile in the section.
 
-</ol>
+2. Matching SIFT features - TBD
 
 
 <h2>3D alignment:</h2>
@@ -44,11 +40,11 @@ Our tool is based on the alignment algorithm that were introduced in TrakEM2 (ht
 </h3>How does it work:</h3>
 The goal of the 3D alignment process is to take a series of sections (given in a json format), aligning them, and saving the output as json files.
 The tool works in 3 phases: features computation, matching adjacent sections, and optimizing the entire stack.
-<br>The first phase computes SIFT features individaully for each section. In the second phase every two adjacent sections are matched.
+The first phase computes SIFT features individaully for each section. In the second phase every two adjacent sections are matched.
 Not only direct neighboring sections can be matched, but also sections that are "far" from each other.
 This can be especially helpful in cases where there are a few errors in the scanned images, but we still look for a good alignment.
 The distance between the adjacent sections has an impact on the elastic alignment of these sections, therefore the weight of a match decreases as the distance grows.
-<br>The second phase executes starts by matching the SIFT features of two sections, and filtering these matches (using RANSAC http://en.wikipedia.org/wiki/RANSAC) to create some initial model that describes the transformation between the sections. It then creates a mesh of the sections, and executes a Block-Matching algorithm between the two sections.
+The second phase executes starts by matching the SIFT features of two sections, and filtering these matches (using RANSAC http://en.wikipedia.org/wiki/RANSAC) to create some initial model that describes the transformation between the sections. It then creates a mesh of the sections, and executes a Block-Matching algorithm between the two sections.
 The last phase performs an optimization on the entire stack of images, and produces a json file for each section with the appropriate elastic transformation.
 
 <h3>Process phases:</h3>
@@ -56,7 +52,6 @@ The last phase performs an optimization on the entire stack of images, and produ
 1. Computing SIFT features - we start by computing the SIFT features for the entire section (probably after downsampling the section).
 Executed using:
 create_layer_sift_features.py tilespec_file_name [-o output_sifts_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
-Parameters:
     * tilespec_file_name - a tile spec json file to compute the SIFT features for.
     * -o output_sifts_json_file_name - the file where the SIFT features will be saved.
     * -j jar_file_name - the path to the FijiBento jar file name.
@@ -69,7 +64,6 @@ Parameters:
     1. Matching SIFT features - match the SIFT features of the two sections.
 Executed using:
 match_layers_sift_features.py tilespec_file_name1 sifts_json_file_name1 tilespec_file_name2 sifts_json_file_name2 [-o output_sift_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
-Parameters:
         * tilespec_file_name1 - a tile spec json file for the first section.
         * sifts_json_file_name1 - a sift features json file for the first section.
         * tilespec_file_name2 - a tile spec json file for the second section.
@@ -82,8 +76,6 @@ Parameters:
     2. Filter the matching features - to get a model that roughly aligns these sections.
 Executed using:
 filter_ransac.py sift_matches_json_file_name compared_url [-o output_model_json_file_name] [-j jar_file_name] [-c conf_file_name]
-Where compared_url is the url of the first json file
-Parameters:
         * sift_matches_json_file_name - a correspondence json file for the matchings between the first section and the second.
         * compared_url - the url of the tile spec to compare against (typically the url of the second tile-spec from the previous step).
         * -o output_model_json_file_name - the file where the transformation model between the two sections will be saved.
@@ -93,7 +85,6 @@ Parameters:
     3. Match by Max-PMCC - creates a triangular mesh from both sections, and attempts to match and elastically align each corresponding triangles between the two sections.
 Executed using:
 match_layers_by_max_pmcc.py tilespec_file_name1 tilespec_file_name2 model_1_to_2_json_file_name -W section_width -H section_height [-o output_pmcc_matches_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers] [--auto_add_model]
-Parameters:
         * tilespec_file_name1 - a tile spec json file for the first section.
         * tilespec_file_name2 - a tile spec json file for the second section.
         * model_1_to_2_json_file_name - a model json file that contains the model between the two sections (in case the model is empty, one can use --auto_add_model to set the default identity model in this case).
@@ -109,8 +100,6 @@ Parameters:
 3. Optimization - Optimizes the entire stack of sections into a single aligned 3D image.
 Executed using:
 optimize_layers_elastic.py (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) -W section_width -H section_height [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-t threads_num] [-f fixed_layers]
-Where the output is a list of Section_[layer_num].json files.
-Parameters:
     * (all_tilespec_file_names | tilespec_file_name1 tilespec_file_name2 ...) - receives either a single file that contains a line-delimeted list of tile-spec json files to parse, or an explicit list of tile spec json files.
     * (all_pmcc_matches_file_name | pmcc_matches_json_file_name1 pmcc_matches_json_file_name2 ...) - receives either a single file that contains a line-delimeted list of correspondence json files to parse, or an explicit list of correspondence json files.
     * -W section_width - the width (number of pixels) of a section.
@@ -123,7 +112,6 @@ Parameters:
 
 * Running all phases on a single machine:
 3d_align_driver.py input_json_files_dir [-w work_dir] [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-d max_layer_distance] [--auto_add_model]
-Parameters:
     * input_json_files_dir - a directory where a tile-spec json file per section are found.
     * -w work_dir - the directory where the various phases json files will be saved.
     * -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
@@ -136,7 +124,6 @@ Parameters:
 
 * Running all phases on the Odyssey cluster:
 3d_align_cluster_driver.py input_json_files_dir [-w work_dir] [-o output_dir] [-j jar_file_name] [-c conf_file_name] [-d max_layer_distance] [--auto_add_model]
-Parameters:
     * input_json_files_dir - a directory where a tile-spec json file per section are found.
     * -w work_dir - the directory where the various phases json files will be saved.
     * -o output_dir - the directory where the output json files (after alignment) will be saved. The files are saved in the format "Section_012.json", where the number represents the section number.
