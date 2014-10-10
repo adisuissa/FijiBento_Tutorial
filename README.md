@@ -57,11 +57,11 @@ The last phase performs an optimization on the entire stack of images, and produ
 Executed using:
 create_layer_sift_features.py tilespec_file_name [-o output_sifts_json_file_name] [-j jar_file_name] [-c conf_file_name] [-t threads_num]
 Parameters:
-* tilespec_file_name - a tile spec json file to compute the SIFT features for.
-* -o output_sifts_json_file_name - the file where the SIFT features will be saved.
-* -j jar_file_name - the path to the FijiBento jar file name.
-* -c conf_file_name - the configuration file that includes the parameters to the java application.
-* -t threads_num - the number of threads to use.
+    * tilespec_file_name - a tile spec json file to compute the SIFT features for.
+    * -o output_sifts_json_file_name - the file where the SIFT features will be saved.
+    * -j jar_file_name - the path to the FijiBento jar file name.
+    * -c conf_file_name - the configuration file that includes the parameters to the java application.
+    * -t threads_num - the number of threads to use.
 
 
 <li> For each two sections that we wish to align together:
